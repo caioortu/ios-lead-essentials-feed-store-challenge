@@ -6,7 +6,7 @@ import XCTest
 import FeedStoreChallenge
 
 class UserDefaultsFeedStore: FeedStore {
-	private let storeKey: String = "feedStoreKey"
+	private let storeKey: String
 	private let userDefaults: UserDefaults
 	
 	private struct Cache: Codable {
@@ -36,8 +36,9 @@ class UserDefaultsFeedStore: FeedStore {
 		}
 	}
 	
-	init(userDefaults: UserDefaults = .standard) {
+	init(userDefaults: UserDefaults = .standard, storeKey: String = "feedStoreKey") {
 		self.userDefaults = userDefaults
+		self.storeKey = storeKey
 	}
 	
 	func deleteCachedFeed(completion: @escaping DeletionCompletion) {
@@ -173,8 +174,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
 	// - MARK: Helpers
 	
-	private func makeSUT() throws -> FeedStore {
-		let sut = UserDefaultsFeedStore(userDefaults: specificForTestUserDefaults())
+	private func makeSUT(userDefaults: UserDefaults? = nil, storeKey: String? = nil) throws -> FeedStore {
+		let sut = UserDefaultsFeedStore(userDefaults: userDefaults ?? specificForTestUserDefaults(),
+										storeKey: storeKey ?? specificForTestStoreKey())
 		
 		return sut
 	}
@@ -198,6 +200,10 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		return UserDefaults(suiteName: "\(type(of: self)).store")!
 	}
 	
+	private func specificForTestStoreKey() -> String {
+		return "\(type(of: self)).storeKey"
+	}
+	
 }
 
 //  ***********************
@@ -208,21 +214,26 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 //
 //  ***********************
 
-//extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
+extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
+
+	func test_retrieve_deliversFailureOnRetrievalError() throws {
+		let userDefaults = specificForTestUserDefaults()
+		let storeKey = specificForTestStoreKey()
+		let invalidData = Data("invalid data".utf8)
+		let sut = try makeSUT()
+
+		userDefaults.set(invalidData, forKey: storeKey)
+
+		assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
+	}
+
+	func test_retrieve_hasNoSideEffectsOnFailure() throws {
+//		let sut = try makeSUT()
 //
-//	func test_retrieve_deliversFailureOnRetrievalError() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
-//	}
-//
-//	func test_retrieve_hasNoSideEffectsOnFailure() throws {
-////		let sut = try makeSUT()
-////
-////		assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
-//	}
-//
-//}
+//		assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
+	}
+
+}
 
 //extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 //
