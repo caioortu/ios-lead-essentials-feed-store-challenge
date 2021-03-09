@@ -82,6 +82,18 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	//
 	//  ***********************
 	
+	override func setUpWithError() throws {
+		try super.setUpWithError()
+		
+		try setupEmptyStoreState()
+	}
+	
+	override func tearDownWithError() throws {
+		try undoStoreSideEffects()
+		
+		try super.tearDownWithError()
+	}
+	
 	func test_retrieve_deliversEmptyOnEmptyCache() throws {
 		let sut = try makeSUT()
 		
@@ -101,9 +113,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 	
 	func test_retrieve_hasNoSideEffectsOnNonEmptyCache() throws {
-//		let sut = try makeSUT()
-//
-//		assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on: sut)
+		let sut = try makeSUT()
+
+		assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on: sut)
 	}
 	
 	func test_insert_deliversNoErrorOnEmptyCache() throws {
@@ -157,9 +169,28 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	// - MARK: Helpers
 	
 	private func makeSUT() throws -> FeedStore {
-		let sut = UserDefaultsFeedStore()
+		let sut = UserDefaultsFeedStore(userDefaults: specificForTestUserDefaults())
 		
 		return sut
+	}
+	
+	private func setupEmptyStoreState() throws {
+		deleteStoreArtifacts()
+	}
+	
+	private func undoStoreSideEffects() throws {
+		deleteStoreArtifacts()
+	}
+	
+	private func deleteStoreArtifacts() {
+		let userDefaults = specificForTestUserDefaults()
+		userDefaults.dictionaryRepresentation().forEach { key, _ in
+			userDefaults.removeObject(forKey: key)
+		}
+	}
+	
+	private func specificForTestUserDefaults() -> UserDefaults {
+		return UserDefaults(suiteName: "\(type(of: self)).store")!
 	}
 	
 }
