@@ -119,9 +119,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 	
 	func test_insert_deliversNoErrorOnEmptyCache() throws {
-//		let sut = try makeSUT()
-//
-//		assertThatInsertDeliversNoErrorOnEmptyCache(on: sut)
+		let sut = try makeSUT()
+
+		assertThatInsertDeliversNoErrorOnEmptyCache(on: sut)
 	}
 	
 	func test_insert_deliversNoErrorOnNonEmptyCache() throws {
