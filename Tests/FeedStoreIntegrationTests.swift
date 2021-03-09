@@ -27,9 +27,9 @@ class FeedStoreIntegrationTests: XCTestCase {
 	}
 	
 	func test_retrieve_deliversEmptyOnEmptyCache() throws {
-//		let sut = try makeSUT()
-//
-//		expect(sut, toRetrieve: .empty)
+		let sut = try makeSUT()
+
+		expect(sut, toRetrieve: .empty)
 	}
 	
 	func test_retrieve_deliversFeedInsertedOnAnotherInstance() throws {
@@ -72,15 +72,28 @@ class FeedStoreIntegrationTests: XCTestCase {
 	// - MARK: Helpers
 	
 	private func makeSUT() throws -> FeedStore {
-		fatalError("Must be implemented")
+		let sut = UserDefaultsFeedStore(userDefaults: specificForTestUserDefaults())
+		
+		return sut
 	}
 	
 	private func setupEmptyStoreState() throws {
-		
+		deleteStoreArtifacts()
 	}
 	
 	private func undoStoreSideEffects() throws {
-		
+		deleteStoreArtifacts()
+	}
+	
+	private func deleteStoreArtifacts() {
+		let userDefaults = specificForTestUserDefaults()
+		userDefaults.dictionaryRepresentation().forEach { key, _ in
+			userDefaults.removeObject(forKey: key)
+		}
+	}
+	
+	private func specificForTestUserDefaults() -> UserDefaults {
+		return UserDefaults(suiteName: "\(type(of: self)).store")!
 	}
 	
 }
