@@ -41,6 +41,11 @@ class UserDefaultsFeedStore: FeedStore {
 	}
 	
 	func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+		guard userDefaults.object(forKey: storeKey) != nil else {
+			return completion(nil)
+		}
+		
+		userDefaults.removeObject(forKey: storeKey)
 		completion(nil)
 	}
 	
@@ -155,9 +160,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 	
 	func test_delete_emptiesPreviouslyInsertedCache() throws {
-//		let sut = try makeSUT()
-//
-//		assertThatDeleteEmptiesPreviouslyInsertedCache(on: sut)
+		let sut = try makeSUT()
+
+		assertThatDeleteEmptiesPreviouslyInsertedCache(on: sut)
 	}
 	
 	func test_storeSideEffects_runSerially() throws {
