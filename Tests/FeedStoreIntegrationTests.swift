@@ -86,14 +86,14 @@ class FeedStoreIntegrationTests: XCTestCase {
 	}
 	
 	private func deleteStoreArtifacts() {
-		let userDefaults = specificForTestUserDefaults()
-		userDefaults.dictionaryRepresentation().forEach { key, _ in
-			userDefaults.removeObject(forKey: key)
-		}
+		UserDefaults().removePersistentDomain(forName: suiteName())
 	}
 	
 	private func specificForTestUserDefaults() -> UserDefaults {
-		return UserDefaults(suiteName: "\(type(of: self)).store")!
+		return UserDefaults(suiteName: suiteName())!
 	}
 	
+	private func suiteName() -> String {
+		return "\(type(of: self)).store"
+	}
 }
