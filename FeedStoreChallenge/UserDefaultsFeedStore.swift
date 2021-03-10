@@ -45,10 +45,6 @@ public final class UserDefaultsFeedStore: FeedStore {
 	}
 	
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-		guard userDefaults.object(forKey: storeKey) != nil else {
-			return completion(nil)
-		}
-		
 		userDefaults.removeObject(forKey: storeKey)
 		completion(nil)
 	}
